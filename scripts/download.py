@@ -1,57 +1,57 @@
 import argparse
 import os
-import sys
+import shutil
+import zipfile
 from pathlib import Path
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Download Kaggle competition data")
-    parser.add_argument(
-        "--competition",
-        default=os.getenv("COMPETITION"),
-        help="Kaggle competition slug (env: COMPETITION)",
-    )
-    parser.add_argument(
-        "--dest",
-        default=os.getenv("KAGGLE_DATA_DIR", "data/raw"),
-        help="Destination directory (default: data/raw)",
-    )
-    parser.add_argument(
-        "--no-unzip",
-        action="store_true",
-        help="Do not unzip downloaded files",
-    )
-    return parser.parse_args()
+def parse_args():
+    p = argparse.ArgumentParser()
+    p.add_argument("--competition", default=os.getenv("COMPETITION"))
+    p.add_argument("--dest", default=os.getenv("KAGGLE_DATA_DIR", "data/raw"))
+    p.add_argument("--no-unzip", action="store_true")
+    return p.parse_args()
 
 
-def main() -> int:
+def unzip_all(dest: Path):
+    for z in dest.glob("*.zip"):
+        with zipfile.ZipFile(z, "r") as zr:
+            zr.extractall(dest)
+
+
+def main():
     args = parse_args()
     if not args.competition:
-        print(
-            "ERROR: COMPETITION is not set. Use --competition or set COMPETITION env."
-        )
+        print("ERROR: COMPETITION is not set.")
         return 2
-
-    try:
-        from kaggle.api.kaggle_api_extended import KaggleApi
-    except Exception as exc:  # pragma: no cover - best-effort import
-        print("ERROR: Kaggle API is not installed. Run: pip install kaggle")
-        print(f"Details: {exc}")
-        return 3
-
     dest = Path(args.dest)
     dest.mkdir(parents=True, exist_ok=True)
 
+    try:
+        import kagglehub
+
+        cache_path = Path(kagglehub.competition_download(args.competition))
+        if cache_path.is_file():
+            shutil.copy2(cache_path, dest / cache_path.name)
+        else:
+            for p in cache_path.rglob("*"):
+                if p.is_file():
+                    shutil.copy2(p, dest / p.name)
+        if not args.no_unzip:
+            unzip_all(dest)
+        print(f"Downloaded competition data to {dest} (via kagglehub)")
+        return 0
+    except Exception as e:
+        print(f"INFO: kagglehub failed, falling back. Details: {e}")
+
+    from kaggle.api.kaggle_api_extended import KaggleApi
+
     api = KaggleApi()
     api.authenticate()
-
-    api.competition_download_files(
-        args.competition,
-        path=str(dest),
-        unzip=not args.no_unzip,
-    )
-
-    print(f"Downloaded competition data to {dest}")
+    api.competition_download_files(args.competition, path=str(dest))
+    if not args.no_unzip:
+        unzip_all(dest)
+    print(f"Downloaded competition data to {dest} (via kaggle legacy)")
     return 0
 
 

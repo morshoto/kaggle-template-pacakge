@@ -32,10 +32,10 @@
       background-color: #f3f4f6;
     }
     .badge {
-      display: inline-block;
-      padding: 4px 8px;
+      display: block;
+      padding: 2px 8px;
       border-radius: 9999px;
-      font-weight: 500;
+      font-weight: 250;
       text-align: center;
       white-space: nowrap;
       color: white;
@@ -48,7 +48,7 @@
     .badge-red { background-color: #EF4444; }
     .badge-yellow { background-color: #F59E0B; }
     .score {
-      display: inline-block;
+      display: block;
       width: 60px;
       padding: 4px 4px;
       border-radius: 9999px;
@@ -89,7 +89,7 @@
       <tr>
         <td class="model-name">name</td>
         <td><span class="badge badge-blue">Algo</span></td>
-        <td class="eval-data">MAE: , Loss: </td>
+        <td class="eval-data">CV: , Loss: </td>
         <td><span>0.xxx</span></td>
         <td class="detail-text"></td>
       </tr>
