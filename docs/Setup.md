@@ -76,6 +76,16 @@ ls -la data/raw
 
 You should see files such as `train.csv`, `test.csv`, and `sample_submission.csv` (exact names depend on the competition).
 
+## 5) Validate a notebook run
+
+Run notebook execution through `uv` before relying on local outputs:
+
+```bash
+go run cli/validate.go nb/000_nb.ipynb
+```
+
+This command uses `.env` and executes the notebook with `jupyter nbconvert --execute`.
+
 ## Troubleshooting
 
 ### 401 Unauthorized

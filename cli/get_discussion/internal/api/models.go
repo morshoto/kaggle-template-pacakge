@@ -13,11 +13,22 @@ type TopicResponse struct {
 }
 
 type MessagesResponse struct {
-	Comments []struct {
-		ID          int    `json:"id"`
-		RawMarkdown string `json:"rawMarkdown"`
-		Content     string `json:"content"`
-	} `json:"comments"`
+	Comments []ForumComment `json:"comments"`
+}
+
+type ForumComment struct {
+	ID                    int              `json:"id"`
+	RawMarkdown           string           `json:"rawMarkdown"`
+	Content               string           `json:"content"`
+	AuthorUserDisplayName string           `json:"authorUserDisplayName"`
+	AuthorUserName        string           `json:"authorUserName"`
+	User                  ForumCommentUser `json:"user"`
+}
+
+type ForumCommentUser struct {
+	DisplayName string `json:"displayName"`
+	UserName    string `json:"userName"`
+	Name        string `json:"name"`
 }
 
 type CompetitionResponse struct {
