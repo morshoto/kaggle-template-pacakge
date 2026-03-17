@@ -4,4 +4,16 @@ version = "0.1.0"
 description = "Starter template for Kaggle and ML competitions."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["kaggle>=1.7.4.5"]
+dependencies = [
+    "catboost>=1.2.8",
+    "ipykernel>=7.2.0",
+    "kaggle>=1.7.4.5",
+    "matplotlib>=3.10.8",
+    "nbconvert>=7.17.0",
+    "numpy>=2.2.6",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.15.3",
+    "torch>=2.10.0",
+    "wandb>=0.23.0",
+]

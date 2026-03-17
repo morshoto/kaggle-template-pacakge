@@ -40,19 +40,7 @@ func BuildDiscussionFromAPI(c *client.Client, rawURL string, topicID int) (*Disc
 		return nil, err
 	}
 
-	// Find the first / main message.
-	var contentMD string
-	for _, m := range msgResp.Comments {
-		if m.ID == t.FirstMessageID || contentMD == "" {
-			contentMD = m.RawMarkdown
-			if contentMD == "" {
-				contentMD = m.Content
-			}
-			if m.ID == t.FirstMessageID {
-				break
-			}
-		}
-	}
+	contentMD := buildDiscussionMarkdown(msgResp, t.FirstMessageID)
 
 	link := t.URL
 	if link == "" {
@@ -83,6 +71,62 @@ func BuildDiscussionFromAPI(c *client.Client, rawURL string, topicID int) (*Disc
 		PublishedDate: t.PostDate,
 		ContentMD:     strings.TrimSpace(contentMD),
 	}, nil
+}
+
+func buildDiscussionMarkdown(msgResp *api.MessagesResponse, firstMessageID int) string {
+	if msgResp == nil || len(msgResp.Comments) == 0 {
+		return ""
+	}
+
+	var mainMessage string
+	var replies []string
+
+	for i, m := range msgResp.Comments {
+		body := strings.TrimSpace(urlutil.FirstNonEmpty(m.RawMarkdown, m.Content))
+		if body == "" {
+			continue
+		}
+
+		if m.ID == firstMessageID || (firstMessageID == 0 && i == 0) {
+			if mainMessage == "" {
+				mainMessage = body
+				continue
+			}
+		}
+
+		author := commentAuthor(m)
+		if author == "" {
+			author = "Unknown"
+		}
+		replies = append(replies, fmt.Sprintf("## Comment by %s\n\n%s", author, body))
+	}
+
+	if mainMessage == "" {
+		mainMessage = strings.TrimSpace(urlutil.FirstNonEmpty(
+			msgResp.Comments[0].RawMarkdown,
+			msgResp.Comments[0].Content,
+		))
+		if len(replies) > 0 {
+			replies = replies[1:]
+		}
+	}
+	if mainMessage == "" {
+		return ""
+	}
+	if len(replies) == 0 {
+		return mainMessage
+	}
+	return mainMessage + "\n\n---\n\n" + strings.Join(replies, "\n\n---\n\n")
+}
+
+func commentAuthor(m api.ForumComment) string {
+	return urlutil.FirstNonEmpty(
+		m.AuthorUserDisplayName,
+		m.AuthorUserName,
+		m.User.DisplayName,
+		m.User.UserName,
+		m.User.Name,
+	)
 }
 
 // IterDiscussions yields Discussion values for each URL, with API -> HTML fallback.
