@@ -1,10 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/shotomorisaki/kaggle_pacakge/cli/get_discussion/internal/api"
@@ -13,6 +15,16 @@ import (
 	"github.com/shotomorisaki/kaggle_pacakge/cli/get_discussion/internal/storage"
 	"github.com/shotomorisaki/kaggle_pacakge/cli/get_discussion/pkg/urlutil"
 )
+
+func fetchCandidateLimit(limit int, all bool, ignoreRules []storage.IgnoreRule) int {
+	if all {
+		return 0
+	}
+	if len(ignoreRules) > 0 && limit > 0 {
+		return 0
+	}
+	return limit
+}
 
 func main() {
 	var (
@@ -38,18 +50,22 @@ func main() {
 
 	storage.LoadEnvFile(".env")
 
+	ignoreRules, err := storage.LoadIgnoreRules(
+		filepath.Join("cli", "get_discussion", "ignore.yml"),
+		"ignore.yml",
+	)
+	if err != nil {
+		log.Printf("[warn] Failed to load ignore rules: %v", err)
+	}
+
 	httpClient := client.NewClient(verbose)
+	fetchLimit := fetchCandidateLimit(limit, all, ignoreRules)
 
 	var urls []string
 
 	if link != "" {
 		urls = []string{urlutil.CanonicalizeURL(link)}
 	} else {
-		effectiveLimit := limit
-		if all {
-			effectiveLimit = 0
-		}
-
 		sortKey := urlutil.NormalizeChoice(sort)
 		timeKey := urlutil.NormalizeChoice(timeFilter)
 
@@ -71,7 +87,7 @@ func main() {
 			if err != nil {
 				log.Printf("[warn] Competition API failed: %v", err)
 			} else {
-				urls, err = api.FetchTopicListByForumID(httpClient, forumID, sortKey, timeKey, effectiveLimit)
+				urls, err = api.FetchTopicListByForumID(httpClient, forumID, sortKey, timeKey, fetchLimit)
 				if err != nil {
 					log.Printf("[warn] Topic list API failed: %v", err)
 					urls = nil
@@ -89,8 +105,8 @@ func main() {
 				log.Printf("[warn] Failed to fetch listing: %v", err)
 			} else {
 				urls = discussion.ExtractDiscussionLinksFromHTML(body, listingURL)
-				if effectiveLimit > 0 && len(urls) > effectiveLimit {
-					urls = urls[:effectiveLimit]
+				if fetchLimit > 0 && len(urls) > fetchLimit {
+					urls = urls[:fetchLimit]
 				}
 			}
 
@@ -102,8 +118,8 @@ func main() {
 					log.Printf("[warn] Competition listing failed: %v", err)
 				} else {
 					urls = discussion.ExtractDiscussionLinksFromHTML(body, compURL)
-					if effectiveLimit > 0 && len(urls) > effectiveLimit {
-						urls = urls[:effectiveLimit]
+					if fetchLimit > 0 && len(urls) > fetchLimit {
+						urls = urls[:fetchLimit]
 					}
 					if len(urls) == 0 {
 						log.Printf("[warn] No discussion links found on competition listing url=%s", compURL)
@@ -115,13 +131,21 @@ func main() {
 
 	existingByLink := storage.LoadExistingLinks(outputDir)
 	d := time.Duration(float64(time.Second) * delay)
+	savedCount := 0
 
 	for discussionItem := range discussion.IterDiscussions(urls, httpClient, d) {
-		path, err := storage.SaveDiscussion(discussionItem, outputDir, existingByLink)
+		path, err := storage.SaveDiscussion(discussionItem, outputDir, existingByLink, ignoreRules)
 		if err != nil {
+			if errors.Is(err, storage.ErrDiscussionIgnored) {
+				continue
+			}
 			log.Printf("[warn] Failed to save %s: %v", discussionItem.Link, err)
 			continue
 		}
 		fmt.Println(path)
+		savedCount++
+		if !all && limit > 0 && savedCount >= limit {
+			break
+		}
 	}
 }

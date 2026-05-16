@@ -14,6 +14,7 @@ import (
 
 // Discussion holds all metadata and content for a single Kaggle discussion.
 type Discussion struct {
+	PostID        int
 	Title         string
 	Link          string
 	Author        string
@@ -64,6 +65,7 @@ func BuildDiscussionFromAPI(c *client.Client, rawURL string, topicID int) (*Disc
 	}
 
 	return &Discussion{
+		PostID:        topicID,
 		Title:         urlutil.FirstNonEmpty(t.Name, "untitled_discussion"),
 		Link:          link,
 		Author:        author,

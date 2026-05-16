@@ -40,6 +40,24 @@ go run ./cli/get_discussion --sort most_votes --time-filter last_30_days
 
 - `COMPETITION`: If set, fetches discussions from a specific Kaggle competition forum.
 
+## Ignore Rules
+
+Create `cli/get_discussion/ignore.yml` to skip specific discussions before they are written.
+
+Each rule is a YAML list item. A rule matches only when every field present in that rule matches:
+
+- `postId`: discussion topic ID from the Kaggle discussion URL
+- `author`: discussion author name
+- `link`: canonical discussion URL
+
+Example:
+
+```yml
+- postId: 12345
+  author: "Some User"
+  link: "https://www.kaggle.com/discussion/12345"
+```
+
 ## Output
 
 Markdown files are written to `--output-dir` with YAML front matter:

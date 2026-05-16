@@ -91,9 +91,11 @@ func BuildDiscussionFromHTML(c *client.Client, rawURL string) (*Discussion, erro
 	if err != nil {
 		return nil, err
 	}
+	postID, _ := urlutil.ExtractTopicID(rawURL)
 	title := extractTitleFromHTML(body)
 	contentMD := htmlToMarkdown(body)
 	return &Discussion{
+		PostID:    postID,
 		Title:     title,
 		Link:      urlutil.CanonicalizeURL(rawURL),
 		ContentMD: contentMD,
