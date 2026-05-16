@@ -1,0 +1,5 @@
+# Each entry is one ignore rule.
+# Fields are ANDed within a rule.
+- postId:
+- author:
+- link:

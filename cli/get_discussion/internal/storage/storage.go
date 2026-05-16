@@ -2,17 +2,28 @@ package storage
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/shotomorisaki/kaggle_pacakge/cli/get_discussion/internal/discussion"
 	"github.com/shotomorisaki/kaggle_pacakge/cli/get_discussion/pkg/urlutil"
 )
 
 var slugRe = regexp.MustCompile(`[^a-z0-9_\-]+`)
+
+var ErrDiscussionIgnored = errors.New("discussion ignored by ignore rules")
+
+type IgnoreRule struct {
+	PostID *int   `yaml:"postId,omitempty"`
+	Author string `yaml:"author,omitempty"`
+	Link   string `yaml:"link,omitempty"`
+}
 
 func slugifyTitle(title string) string {
 	slug := strings.ToLower(strings.TrimSpace(title))
@@ -96,6 +107,60 @@ func LoadExistingLinks(outputDir string) map[string]string {
 	return links
 }
 
+func LoadIgnoreRules(paths ...string) ([]IgnoreRule, error) {
+	for _, path := range paths {
+		if strings.TrimSpace(path) == "" {
+			continue
+		}
+		data, err := os.ReadFile(path)
+		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+			return nil, err
+		}
+		if strings.TrimSpace(string(data)) == "" {
+			return nil, nil
+		}
+		var rules []IgnoreRule
+		if err := yaml.Unmarshal(data, &rules); err != nil {
+			var single IgnoreRule
+			if err2 := yaml.Unmarshal(data, &single); err2 != nil {
+				return nil, fmt.Errorf("parse ignore rules from %s: %w", path, err)
+			}
+			rules = []IgnoreRule{single}
+		}
+		return rules, nil
+	}
+	return nil, nil
+}
+
+func matchesIgnoreRule(d *discussion.Discussion, rule IgnoreRule) bool {
+	if rule.PostID != nil && d.PostID != *rule.PostID {
+		return false
+	}
+
+	if strings.TrimSpace(rule.Author) != "" && strings.TrimSpace(rule.Author) != strings.TrimSpace(d.Author) {
+		return false
+	}
+
+	if strings.TrimSpace(rule.Link) != "" &&
+		urlutil.CanonicalizeURL(rule.Link) != urlutil.CanonicalizeURL(d.Link) {
+		return false
+	}
+
+	return true
+}
+
+func shouldIgnoreDiscussion(d *discussion.Discussion, rules []IgnoreRule) bool {
+	for _, rule := range rules {
+		if matchesIgnoreRule(d, rule) {
+			return true
+		}
+	}
+	return false
+}
+
 func ensureUniquePath(outputDir, baseName string, existingPaths map[string]struct{}) string {
 	candidate := filepath.Join(outputDir, baseName+".md")
 	if _, dup := existingPaths[candidate]; !dup {
@@ -113,7 +178,11 @@ func ensureUniquePath(outputDir, baseName string, existingPaths map[string]struc
 	}
 }
 
-func SaveDiscussion(d *discussion.Discussion, outputDir string, existingByLink map[string]string) (string, error) {
+func SaveDiscussion(d *discussion.Discussion, outputDir string, existingByLink map[string]string, ignoreRules []IgnoreRule) (string, error) {
+	if shouldIgnoreDiscussion(d, ignoreRules) {
+		return "", ErrDiscussionIgnored
+	}
+
 	if err := os.MkdirAll(outputDir, 0o755); err != nil {
 		return "", err
 	}
