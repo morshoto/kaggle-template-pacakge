@@ -38,6 +38,10 @@ class EvaluationTests(unittest.TestCase):
                 self.assertIs(type(scores["score"]), float)
                 self.assertEqual(scores["score"], float(value))
 
+    def test_empty_metrics_raise_clear_error(self):
+        with self.assertRaisesRegex(ValueError, "^At least one metric must be provided[.]$"):
+            evaluate(self.y_true, self.y_pred, {})
+
     def test_metric_errors_propagate(self):
         error = RuntimeError("metric failed")
 
