@@ -1,9 +1,10 @@
 from collections.abc import Callable, Mapping
+from typing import SupportsFloat
 
 import numpy as np
 
 
-Metric = Callable[[np.ndarray, np.ndarray], float]
+Metric = Callable[[np.ndarray, np.ndarray], SupportsFloat]
 
 
 def evaluate(
