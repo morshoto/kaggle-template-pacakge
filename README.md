@@ -1,43 +1,52 @@
-# Kaggle Template
+# Kaggle Competition Starter
 
-### Description
+A starter repository for Kaggle competitions. Replace this introduction with the competition name, objective, evaluation metric, and the current baseline once a project begins.
 
-Develop machine learning models to predict. The goal is to improve understanding.
+## Start here
 
-```bash
-├── data           <---- Data directory
-├── cli            <---- Command line tools
-├── docs           <---- Documents, logs
-│   ├── Log.md     <---- Day tracking work
-│   ├── Paper.md   <---- Paper research
-│   └── Scoring.md <---- Score tracking table
-├── paper          <---- Papers to read, get inspired
-├── nb             <---- Created on jupyter notebook
-├── nb_download    <---- Public notebook from kaggle
-├── README.md
-├── requirements.txt
-├── scripts        <----Utility scripts
-├── src            <----Reusable code
-│   ├── cli        <----Minimal logic Command-line entry point to call pipelines
-│   ├── core       <----Shared config & utilities
-│   ├── data       <----Data I/O + preprocessing helpers
-│   ├── features   <----Feature engineering
-│   ├── models     <----Model implementations
-│   └── pipelines  <----Orchestration flows
+- [Competition brief](docs/Competition.md): rules, metric, deadlines, and submission format.
+- [Setup guide](docs/Setup.md): local environment and Kaggle credentials.
+- [Experiment index](experiments/README.md): active questions, status, and links to evidence.
+- [Repository structure](docs/Repository-Structure.md): where project files belong.
+- [Score table](docs/Score.md): comparable validation and leaderboard results.
+
+## Repository map
+
+```text
+configs/                 Versioned experiment and evaluation settings
+data/                    Local raw, processed, and external data (ignored by Git)
+notebooks/               Authored notebooks, grouped by purpose
+  exploration/           EDA and hypothesis checks
+  training/              Training and model development
+  analysis/              Error analysis and evaluation
+  submission/            Notebook based submission generation
+references/              Curated external notebooks, papers, and discussions
+experiments/              Experiment index and durable findings
+artifacts/                Local generated runs, models, and reports (ignored)
+src/                      Reusable implementation
+cli/                      User-facing command line tools
+scripts/                  Maintenance and automation scripts
+submissions/              Small manifests for promoted submissions
+docs/                      Competition brief, setup, findings, log, and score tracking
+.github/workflows/         Lightweight repository checks
 ```
 
-### CLI Usage 
+Optional folders such as `notebooks/training/`, `notebooks/analysis/`, `notebooks/submission/`, and `references/notebooks/` can be created when first needed. The template keeps only folders with starter content or an explicit README.
 
-**cli/get_discussion**
-This command line tool let you gather kaggle discussion and let you create local markdown files. This levarages you to summarize discussions with other tools
+## Experiment flow
 
-> [!NOTE]
-> Initialize `.env` file from `.env.example` file to read competition
+1. Add a row with a stable ID to [the experiment index](experiments/README.md).
+2. Put the notebook under `notebooks/` and any reusable logic under `src/`.
+3. Save the exact configuration under `configs/` and generated output under `artifacts/<experiment-id>/`.
+4. Summarize the result, baseline, validation method, and limitations in `docs/findings/`.
+5. Record promoted results in `docs/Score.md` and capture the submitted artifact manifest under `submissions/`.
 
-### Dataset
+## Useful commands
 
-The dataset provided for this competition consists of.
+```bash
+uv sync
+uv run python scripts/download.py --competition <competition-slug> --dest data/raw
+go run cli/validate.go notebooks/exploration/exp-001-data.ipynb
+```
 
-| Name | Detail | Size | Link     |
-| ---- | ------ | ---- | -------- |
-| name |        |      | [Link]() |
+Kaggle credentials belong in a local `.env` file and must not be committed. See [the setup guide](docs/Setup.md) before downloading data or running notebooks.
