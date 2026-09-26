@@ -1,8 +1,10 @@
 'Problem: Bug':
-  - head-branch: ['^fix']
+    - head-branch: ['^hotfix']
+    - head-branch: ['^fix']
+    - head-branch: ['^bug']
 'Type: New Feature':
-  - head-branch: ['^feat']
+    - head-branch: ['^feat']
 'Type: Improvement':
-  - head-branch: ['^dev']
-'Type: Refactor':
-  - head-branch: ['^refactor/']
+    - head-branch: ['^refactor']
+'Type: Chore':
+    - head-branch: ['^renovate/']

@@ -19,8 +19,11 @@
     "color": "FEF2C0",
     "description": ""
   },
-
-
+  {
+    "name": "Group: Infrastructure",
+    "color": "FEF2C0",
+    "description": ""
+  },
   {
     "name": "Type: Design",
     "color": "0052CC",
@@ -32,7 +35,7 @@
     "description": ""
   },
   {
-    "name": "Type: Improvement",
+    "name": "Type: Performance",
     "color": "0052CC",
     "description": ""
   },
@@ -42,12 +45,25 @@
     "description": ""
   },
   {
-    "name": "Type: Refactor",
+    "name": "Type: Chore",
     "color": "0052CC",
     "description": ""
   },
-
-
+  {
+    "name": "tagpr",
+    "color": "ededed",
+    "description": ""
+  },
+  {
+    "name": "major",
+    "color": "B60205",
+    "description": "Requests a major SemVer release bump, such as v0.1.0 to v1.0.0."
+  },
+  {
+    "name": "minor",
+    "color": "0E8A16",
+    "description": "Requests a minor SemVer release bump, such as v0.0.1 to v0.1.0."
+  },
   {
     "name": "Close: Duplicate",
     "color": "D4C5F9",
@@ -63,8 +79,6 @@
     "color": "D4C5F9",
     "description": ""
   },
-
-
   {
     "name": "O: Good 1st Issue",
     "color": "0E8A16",
@@ -75,8 +89,6 @@
     "color": "0E8A16",
     "description": ""
   },
-
-
   {
     "name": "Priority: High",
     "color": "D93F0B",
@@ -92,8 +104,6 @@
     "color": "C5DEF5",
     "description": ""
   },
-
-
   {
     "name": "Feedback: Feature Request",
     "color": "FBCA04",
@@ -104,8 +114,6 @@
     "color": "FBCA04",
     "description": ""
   },
-
-
   {
     "name": "Problem: Bug",
     "color": "B60205",
