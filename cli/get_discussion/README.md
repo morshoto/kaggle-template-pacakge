@@ -30,7 +30,7 @@ go run ./cli/get_discussion --sort most_votes --time-filter last_30_days
 - `--link`: Download a single discussion by URL.
 - `--sort`: `hotness`, `recent_comments`, `recently_posted`, `most_votes`, `most_comments`.
 - `--time-filter`: `last_30_days`, `last_7_days`, `today`.
-- `--output-dir`: Output directory for Markdown files (default `discussion`).
+- `--output-dir`: Output directory for Markdown files (default `references/discussions`).
 - `--limit`: Max discussions to download when listing (default `10`).
 - `--all`: Download all discussions (ignores `--limit`).
 - `--delay`: Delay in seconds between requests (default `0.5`).
