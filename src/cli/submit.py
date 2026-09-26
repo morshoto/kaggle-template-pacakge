@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output",
         default="",
-        help="Output CSV path (default: data/submissions/submission_YYYYmmdd_HHMMSS.csv)",
+        help="Output CSV path (default: artifacts/submissions/submission_YYYYmmdd_HHMMSS.csv)",
     )
     return parser.parse_args()
 

@@ -7,7 +7,7 @@ Use `kaggle_replay_forensic_template.md` for submission replay analysis and
 **Date:** YYYY-MM-DD
 **Status:** Draft / Promising / Adopted / Rejected / Superseded / Blocked
 **Owner:** <name>
-**Related notebook / script:** `nb/<notebook>.ipynb` / `src/<path>.py`
+**Related notebook / script:** `notebooks/<purpose>/<notebook>.ipynb` / `src/<path>.py`
 **Experiment / train id:** `<id>`
 **Canonical source:** `<path>@<commit or SHA-256>`
 **Baseline source:** `<path>@<commit or SHA-256>`
@@ -51,7 +51,7 @@ validation below directly supports that claim.
 
 | Item | Value |
 | ---- | ----- |
-| Notebook / script | `nb/...` |
+| Notebook / script | `notebooks/...` |
 | Agent / policy | `<name and source identity>` |
 | Baseline | `<source identity and configuration>` |
 | Candidate | `<source identity and configuration>` |

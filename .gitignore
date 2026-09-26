@@ -1,8 +1,9 @@
 # Custom ignore
 catboost_info/
-discussion/
 pnpm-lock.yaml
 node_modules/
+artifacts/**
+!artifacts/README.md
 data/**
 !data/
 !data/**/

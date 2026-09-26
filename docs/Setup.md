@@ -11,7 +11,7 @@ This document describes how to set up the environment and download Kaggle compet
 
 ## 1) Configure Kaggle credentials
 
-This project uses **kagglehub** for downloading competition data (recommended), with a fallback to the legacy Kaggle CLI.
+This project uses the Kaggle API tooling configured in `pyproject.toml` to download competition data.
 
 ### Create a Kaggle API token
 
@@ -34,8 +34,6 @@ KAGGLE_KEY="your_key"
 COMPETITION="playground-series-s6e2"
 ```
 
-> Notes:
->
 > Notes:
 >
 > - `KAGGLE_API_TOKEN` is required for kagglehub.
@@ -81,10 +79,10 @@ You should see files such as `train.csv`, `test.csv`, and `sample_submission.csv
 Run notebook execution through `uv` before relying on local outputs:
 
 ```bash
-go run cli/validate.go nb/000_nb.ipynb
+go run cli/validate.go notebooks/exploration/exp-001-data.ipynb
 ```
 
-This command uses `.env` and executes the notebook with `jupyter nbconvert --execute`.
+This command uses `.env` and executes the notebook with `jupyter nbconvert --execute`. It writes the executed copy to a temporary directory rather than replacing the source notebook.
 
 ## Troubleshooting
 

@@ -41,7 +41,7 @@ func main() {
 	flag.StringVar(&link, "link", "", "Download a single discussion by URL.")
 	flag.StringVar(&sort, "sort", "hotness", "Sort: hotness, recent_comments, recently_posted, most_votes, most_comments.")
 	flag.StringVar(&timeFilter, "time-filter", "", "Time filter: last_30_days, last_7_days, today.")
-	flag.StringVar(&outputDir, "output-dir", "discussion", "Output directory for Markdown files.")
+	flag.StringVar(&outputDir, "output-dir", filepath.Join("references", "discussions"), "Output directory for Markdown files.")
 	flag.Float64Var(&delay, "delay", 0.5, "Delay in seconds between requests.")
 	flag.IntVar(&limit, "limit", 10, "Max discussions to download (default 10).")
 	flag.BoolVar(&all, "all", false, "Download all discussions (ignores --limit).")

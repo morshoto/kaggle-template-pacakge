@@ -9,7 +9,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: go run scripts/check_notebook.go <notebook.ipynb>")
+		fmt.Fprintln(os.Stderr, "usage: go run cli/validate.go <notebook.ipynb>")
 		os.Exit(2)
 	}
 
